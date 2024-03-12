@@ -1,18 +1,33 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 
 export default function Dashboard({ auth }) {
+
+    const { data, setData, post, processing, errors } = useForm({
+        price: '',
+        card: '',
+        cardDataM: '',
+        cardDataY: '',
+        cardCVC: '',
+        users_name: '',
+    })
+    function submit(e) {
+        e.preventDefault()
+        post('/payment')
+    }
+
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Пополнить банковской картой</h2>}
         >
-            <Head title="Пополнить банковской картой" />
+            <Head title="Пополнить банковской картой"/>
 
             <div className="py-10">
                 <div className="max-w-[550px] mx-auto bg-white overflow-hidden shadow-sm sm:rounded-lg p-[40px]">
                     <div className="text-gray-900 font-semibold text-[24px] mb-3">Пополнить банковской картой</div>
-                    <form>
+                    <form onSubmit={submit}>
                         <div className="mb-3">
                             <label htmlFor="price1" className="form-label text-[12px] text-gray-700">УКАЖИТЕ
                                 СУММУ</label><br></br>
@@ -22,7 +37,7 @@ export default function Dashboard({ auth }) {
                                    placeholder="0000.00  $"/>
                             <input type="number"
                                    className="form-control rounded-r-lg w-[144px]  h-[52px] bg-[#FAFAFC] border-l-0 border-gray-200"
-                                   id="price2"
+                                   id="price2" name="price" value={data.price} onChange={e => setData('price', e.target.value)}
                                    placeholder="0000.00  Р"/>
                         </div>
                         <div
@@ -34,21 +49,24 @@ export default function Dashboard({ auth }) {
                             <div className="card1 bg-blue-400 w-[324px] h-[208px] rounded-xl z-10 px-5 pt-10">
                                 <label htmlFor="card" className="form-label text-[12px] text-gray-100">НОМЕР
                                     КАРТЫ</label><br></br>
-                                <input type="text" maxLength="16" minLength="16" required="true" inputmode="numeric"
+                                <input type="text" maxLength="16" minLength="16" required
                                        pattern="[0-9\s]{13,19}"
                                        className="form-control rounded-lg w-[284px] h-[38px] bg-[#FAFAFC] border-gray-200 mt-1 mb-3"
-                                       id="card"
+                                       id="card" name="card"
+                                       value={data.card} onChange={e => setData('card', e.target.value)}
                                        placeholder="Номер карты"/>
-                                <label htmlFor="cardDataM" className="form-label text-[12px] text-gray-100">ДЕЙСТВУЕТ
+                                <label htmlFor="cardDataM"  className="form-label text-[12px] text-gray-100">ДЕЙСТВУЕТ
                                     ДО</label><br></br>
                                 <input type="number" max="12" maxLength="2"
                                        className="form-control rounded-lg w-[72px] h-[38px] bg-[#FAFAFC] border-gray-200 mt-1"
-                                       id="cardDataM"
+                                       id="cardDataM" name="cardDataM"
+                                       value={data.cardDataM} onChange={e => setData('cardDataM', e.target.value)}
                                        placeholder="ММ"/>
                                 <h2 className="inline-block mx-1 text-gray-100">/</h2>
                                 <input type="number" min="2023" maxLength="4"
                                        className="form-control rounded-lg w-[72px] h-[38px] bg-[#FAFAFC] border-gray-200 mt-1"
-                                       id="cardDataY"
+                                       id="cardDataY" name="cardDataY"
+                                       value={data.cardDataY} onChange={e => setData('cardDataY', e.target.value)}
                                        placeholder="ГГ"/>
                             </div>
                             <div
@@ -57,14 +75,16 @@ export default function Dashboard({ auth }) {
                                 <p className="text-gray-500 text-[12px] ml-7 mt-2">CVV/CVC</p>
                                 <input type="number" max="999" maxLength="3"
                                        className="form-control rounded-lg w-[72px] h-[38px] bg-[#FAFAFC] border-gray-200 ml-8 mt-2"
-                                       id="cardDataM"
+                                       id="cardCVC" name="cardCVC"
+                                       value={data.cardCVC} onChange={e => setData('cardCVC', e.target.value)}
                                        placeholder="000"/><br></br>
-                                <label htmlFor="cardDataM"
+                                <label htmlFor="cardCVC"
                                        className="block form-label text-[10px] text-gray-400 ml-8 mt-1 w-30">три
                                     цифры<br></br>с обратной стороны<br></br>карты</label>
                             </div>
                         </div>
-                        <input type="checkbox" className="inline-block mt-[-43px] rounded-sm border-2 border-blue-400"/>
+                        <input type="hidden" name="users_name" value={data.users_name = auth.user.id} />
+                        <input type="checkbox" name="isCardSave" className="inline-block mt-[-43px] rounded-sm border-2 border-blue-400"/>
                         <p className="inline-block text-[14px] text-gray-700 ml-2 mt-5">Запомнить эту карту. Это безопасно.<svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                                     height="16" fill="gray"
                                                                     className="bi bi-exclamation-circle inline-block ml-2"
@@ -75,8 +95,7 @@ export default function Dashboard({ auth }) {
                         </svg><br></br>
                             Сохраняя карту, вы соглашаетесь с <a href="#" className="text-blue-500">условиями привязки карты.</a>
                         </p>
-
-
+                        <button className="bg-blue-400 rounded-3xl w-[141px] h-[52px] font-semibold text-white mt-4" type="submit">Оплатить</button>
                     </form>
 
                 </div>
