@@ -26,7 +26,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $cards = \App\Models\Card::all();
+    $cards = $cards->toArray();
+    return Inertia::render('Dashboard',[ 'cards' => $cards ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::post('/payment', [\App\Http\Controllers\CardController::class, 'payment']);
